@@ -93,7 +93,7 @@ ShopSphere uses Cubit from `flutter_bloc`. Cubit keeps transitions explicit with
 Prerequisites: Flutter 3.47.7, Dart 3.13.5, Android Studio with an Android 8.0+ emulator or device.
 
 ```bash
-git clone <repository-url>
+git clone <[repository-url](https://github.com/Aalokkumar0/prosessed-flutter-developer-intern-technical-assignment-Aalok.git)>
 cd prosessed-flutter-assignment
 flutter pub get
 flutter run
