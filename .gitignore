@@ -46,3 +46,7 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Local Codex working files are not part of the assignment submission.
+/work/
+/outputs/
