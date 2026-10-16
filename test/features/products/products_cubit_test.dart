@@ -3,9 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shopsphere/core/error/app_failure.dart';
 import 'package:shopsphere/features/products/domain/product.dart';
+import 'package:shopsphere/features/products/domain/product_use_cases.dart';
 import 'package:shopsphere/features/products/presentation/products_cubit.dart';
 
-class MockProductsRepository extends Mock implements ProductsRepository {}
+class MockProductUseCases extends Mock implements ProductUseCases {}
 
 const item = Product(
   id: 7,
@@ -21,17 +22,17 @@ const item = Product(
 );
 
 void main() {
-  late MockProductsRepository repository;
+  late MockProductUseCases useCases;
 
   setUp(() {
-    repository = MockProductsRepository();
-    when(repository.getCategories)
+    useCases = MockProductUseCases();
+    when(useCases.getCategories)
         .thenAnswer((_) async => ['beauty', 'smartphones']);
   });
 
   void stubPage(ProductPage page) {
     when(
-      () => repository.getProducts(
+      () => useCases.getProducts(
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
         search: any(named: 'search'),
@@ -48,7 +49,7 @@ void main() {
       stubPage(
         const ProductPage(products: [item], total: 1, skip: 0, limit: 20),
       );
-      return ProductsCubit(repository);
+      return ProductsCubit(useCases);
     },
     act: (cubit) => cubit.load(),
     verify: (cubit) {
@@ -62,7 +63,7 @@ void main() {
     'emits dedicated empty state',
     build: () {
       stubPage(const ProductPage(products: [], total: 0, skip: 0, limit: 20));
-      return ProductsCubit(repository);
+      return ProductsCubit(useCases);
     },
     act: (cubit) => cubit.load(),
     verify: (cubit) => expect(cubit.state.status, ProductsStatus.empty),
@@ -72,7 +73,7 @@ void main() {
     'maps repository failure to failure state',
     build: () {
       when(
-        () => repository.getProducts(
+        () => useCases.getProducts(
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
           search: any(named: 'search'),
@@ -81,7 +82,7 @@ void main() {
           order: any(named: 'order'),
         ),
       ).thenThrow(const AppFailure('Server unavailable'));
-      return ProductsCubit(repository);
+      return ProductsCubit(useCases);
     },
     act: (cubit) => cubit.load(),
     verify: (cubit) {
@@ -96,7 +97,7 @@ void main() {
       stubPage(
         const ProductPage(products: [item], total: 2, skip: 1, limit: 20),
       );
-      return ProductsCubit(repository);
+      return ProductsCubit(useCases);
     },
     seed: () => const ProductsState(
       status: ProductsStatus.success,
@@ -114,7 +115,7 @@ void main() {
       stubPage(
         const ProductPage(products: [item], total: 1, skip: 0, limit: 20),
       );
-      return ProductsCubit(repository);
+      return ProductsCubit(useCases);
     },
     act: (cubit) => cubit.changeSort(ProductSort.priceHigh),
     verify: (cubit) => expect(cubit.state.sort, ProductSort.priceHigh),

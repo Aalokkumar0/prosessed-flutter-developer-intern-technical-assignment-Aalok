@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/error/app_failure.dart';
 import '../domain/product.dart';
+import '../domain/product_use_cases.dart';
 
 enum ProductsStatus { initial, loading, success, empty, failure }
 
@@ -86,10 +87,10 @@ class ProductsState extends Equatable {
 }
 
 class ProductsCubit extends Cubit<ProductsState> {
-  ProductsCubit(this._repository) : super(const ProductsState());
+  ProductsCubit(this._useCases) : super(const ProductsState());
 
   static const _pageSize = 20;
-  final ProductsRepository _repository;
+  final ProductUseCases _useCases;
   Timer? _searchTimer;
 
   Future<void> load({bool refresh = false}) async {
@@ -102,7 +103,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     );
     try {
       final results = await Future.wait([
-        _repository.getProducts(
+        _useCases.getProducts(
           skip: 0,
           limit: _pageSize,
           search: state.search,
@@ -110,7 +111,7 @@ class ProductsCubit extends Cubit<ProductsState> {
           sortBy: state.sort.field,
           order: state.sort.order,
         ),
-        if (state.categories.isEmpty) _repository.getCategories(),
+        if (state.categories.isEmpty) _useCases.getCategories(),
       ]);
       final page = results.first as ProductPage;
       final categories = results.length > 1
@@ -140,7 +141,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     if (!state.canLoadMore || state.status != ProductsStatus.success) return;
     emit(state.copyWith(isLoadingMore: true));
     try {
-      final page = await _repository.getProducts(
+      final page = await _useCases.getProducts(
         skip: state.products.length,
         limit: _pageSize,
         search: state.search,
