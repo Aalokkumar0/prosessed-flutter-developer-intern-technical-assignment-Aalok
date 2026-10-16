@@ -5,8 +5,10 @@ import 'package:intl/intl.dart';
 
 import '../../../core/di/service_locator.dart';
 import '../../../core/error/app_failure.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../cart/presentation/cart_cubit.dart';
+import '../../wishlist/presentation/wishlist_cubit.dart';
 import '../domain/product.dart';
 import '../domain/product_use_cases.dart';
 
@@ -24,7 +26,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Product details')),
+      appBar: AppBar(title: Text(context.l10n.text('productDetails'))),
       body: ProductDetailsPane(
         productId: widget.productId,
         preview: widget.preview,
@@ -236,6 +238,26 @@ class _ProductInformation extends StatelessWidget {
             product.title,
             style: Theme.of(context).textTheme.headlineMedium,
           ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: BlocBuilder<WishlistCubit, WishlistState>(
+              buildWhen: (previous, current) =>
+                  previous.contains(product.id) != current.contains(product.id),
+              builder: (context, state) {
+                final saved = state.contains(product.id);
+                return TextButton.icon(
+                  onPressed: () =>
+                      context.read<WishlistCubit>().toggle(product),
+                  icon: Icon(
+                    saved
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border_rounded,
+                  ),
+                  label: Text(saved ? 'Saved' : 'Save'),
+                );
+              },
+            ),
+          ),
           const SizedBox(height: 14),
           Row(
             children: [
@@ -262,7 +284,7 @@ class _ProductInformation extends StatelessWidget {
               Text(
                 product.isInStock
                     ? '${product.stock} in stock'
-                    : 'Out of stock',
+                    : context.l10n.text('outOfStock'),
               ),
             ],
           ),
@@ -312,7 +334,9 @@ class _ProductInformation extends StatelessWidget {
                       : null,
                   icon: const Icon(Icons.shopping_bag_outlined),
                   label: Text(
-                    product.isInStock ? 'Add to cart' : 'Out of stock',
+                    product.isInStock
+                        ? context.l10n.text('addToCart')
+                        : context.l10n.text('outOfStock'),
                   ),
                 ),
               ),
@@ -320,7 +344,7 @@ class _ProductInformation extends StatelessWidget {
           ),
           const SizedBox(height: 34),
           Text(
-            'Customer reviews',
+            context.l10n.text('customerReviews'),
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 12),

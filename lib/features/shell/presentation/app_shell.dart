@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/localization/app_localizations.dart';
 import '../../cart/presentation/cart_cubit.dart';
 import '../../cart/presentation/cart_page.dart';
 import '../../products/presentation/products_page.dart';
 import '../../profile/presentation/profile_page.dart';
+import '../../wishlist/presentation/wishlist_page.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -16,7 +18,12 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   int _selectedIndex = 0;
 
-  static const _pages = [ProductsPage(), CartPage(), ProfilePage()];
+  static const _pages = [
+    ProductsPage(),
+    WishlistPage(),
+    CartPage(),
+    ProfilePage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -43,20 +50,25 @@ class _AppShellState extends State<AppShell> {
                     ),
                   ),
                   destinations: [
-                    const NavigationRailDestination(
+                    NavigationRailDestination(
                       icon: Icon(Icons.grid_view_outlined),
                       selectedIcon: Icon(Icons.grid_view_rounded),
-                      label: Text('Shop'),
+                      label: Text(context.l10n.text('shop')),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.favorite_border_rounded),
+                      selectedIcon: const Icon(Icons.favorite_rounded),
+                      label: Text(context.l10n.text('saved')),
                     ),
                     NavigationRailDestination(
                       icon: _CartIcon(count: count),
                       selectedIcon: _CartIcon(count: count, selected: true),
-                      label: const Text('Cart'),
+                      label: Text(context.l10n.text('cart')),
                     ),
-                    const NavigationRailDestination(
-                      icon: Icon(Icons.person_outline),
-                      selectedIcon: Icon(Icons.person),
-                      label: Text('Profile'),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.person_outline),
+                      selectedIcon: const Icon(Icons.person),
+                      label: Text(context.l10n.text('profile')),
                     ),
                   ],
                 ),
@@ -73,20 +85,25 @@ class _AppShellState extends State<AppShell> {
             onDestinationSelected: (index) =>
                 setState(() => _selectedIndex = index),
             destinations: [
-              const NavigationDestination(
-                icon: Icon(Icons.grid_view_outlined),
-                selectedIcon: Icon(Icons.grid_view_rounded),
-                label: 'Shop',
+              NavigationDestination(
+                icon: const Icon(Icons.grid_view_outlined),
+                selectedIcon: const Icon(Icons.grid_view_rounded),
+                label: context.l10n.text('shop'),
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.favorite_border_rounded),
+                selectedIcon: const Icon(Icons.favorite_rounded),
+                label: context.l10n.text('saved'),
               ),
               NavigationDestination(
                 icon: _CartIcon(count: count),
                 selectedIcon: _CartIcon(count: count, selected: true),
-                label: 'Cart',
+                label: context.l10n.text('cart'),
               ),
-              const NavigationDestination(
-                icon: Icon(Icons.person_outline),
-                selectedIcon: Icon(Icons.person),
-                label: 'Profile',
+              NavigationDestination(
+                icon: const Icon(Icons.person_outline),
+                selectedIcon: const Icon(Icons.person),
+                label: context.l10n.text('profile'),
               ),
             ],
           ),

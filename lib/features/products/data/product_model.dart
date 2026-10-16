@@ -31,4 +31,26 @@ class ProductModel {
       brand: json['brand']?.toString(),
     );
   }
+
+  static Map<String, dynamic> toJson(Product product) => {
+    'id': product.id,
+    'title': product.title,
+    'description': product.description,
+    'price': product.price,
+    'discountPercentage': product.discountPercentage,
+    'rating': product.rating,
+    'stock': product.stock,
+    'thumbnail': product.thumbnail,
+    'images': product.images,
+    'brand': product.brand,
+    'reviews': product.reviews
+        .map(
+          (review) => {
+            'rating': review.rating,
+            'comment': review.comment,
+            'reviewerName': review.reviewerName,
+          },
+        )
+        .toList(),
+  };
 }

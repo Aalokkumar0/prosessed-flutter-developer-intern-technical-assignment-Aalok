@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../auth/presentation/auth_cubit.dart';
 import 'cart_cubit.dart';
@@ -29,16 +30,16 @@ class CartPage extends StatelessWidget {
       builder: (context, state) {
         if (state.items.isEmpty) {
           return Scaffold(
-            appBar: AppBar(title: Text('Your bag')),
+            appBar: AppBar(title: Text(context.l10n.text('yourBag'))),
             body: EmptyStateView(
-              title: 'Your bag is empty',
-              message: 'Explore the catalogue and add something you love.',
+              title: context.l10n.text('emptyBag'),
+              message: context.l10n.text('emptyBagMessage'),
               icon: Icons.shopping_bag_outlined,
             ),
           );
         }
         return Scaffold(
-          appBar: AppBar(title: const Text('Your bag')),
+          appBar: AppBar(title: Text(context.l10n.text('yourBag'))),
           body: SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -217,7 +218,7 @@ class _OrderSummary extends StatelessWidget {
                         dimension: 22,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Place order'),
+                    : Text(context.l10n.text('placeOrder')),
               ),
             ),
           ],

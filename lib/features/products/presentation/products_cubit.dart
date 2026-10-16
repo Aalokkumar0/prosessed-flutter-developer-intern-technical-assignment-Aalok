@@ -32,6 +32,7 @@ class ProductsState extends Equatable {
     this.sort = ProductSort.relevance,
     this.total = 0,
     this.isLoadingMore = false,
+    this.isOffline = false,
     this.message,
   });
 
@@ -43,6 +44,7 @@ class ProductsState extends Equatable {
   final ProductSort sort;
   final int total;
   final bool isLoadingMore;
+  final bool isOffline;
   final String? message;
 
   bool get canLoadMore => products.length < total && !isLoadingMore;
@@ -57,6 +59,7 @@ class ProductsState extends Equatable {
     ProductSort? sort,
     int? total,
     bool? isLoadingMore,
+    bool? isOffline,
     String? message,
   }) => ProductsState(
     status: status ?? this.status,
@@ -69,6 +72,7 @@ class ProductsState extends Equatable {
     sort: sort ?? this.sort,
     total: total ?? this.total,
     isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+    isOffline: isOffline ?? this.isOffline,
     message: message,
   );
 
@@ -82,6 +86,7 @@ class ProductsState extends Equatable {
     sort,
     total,
     isLoadingMore,
+    isOffline,
     message,
   ];
 }
@@ -125,6 +130,7 @@ class ProductsCubit extends Cubit<ProductsState> {
           products: page.products,
           total: page.total,
           categories: categories,
+          isOffline: page.isFromCache,
         ),
       );
     } on AppFailure catch (failure) {

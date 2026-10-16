@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../wishlist/presentation/wishlist_cubit.dart';
 import '../domain/product.dart';
 
 class ProductCard extends StatelessWidget {
@@ -60,6 +62,28 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: BlocBuilder<WishlistCubit, WishlistState>(
+                      buildWhen: (previous, current) =>
+                          previous.contains(product.id) !=
+                          current.contains(product.id),
+                      builder: (context, state) {
+                        final saved = state.contains(product.id);
+                        return IconButton.filledTonal(
+                          tooltip: saved ? 'Remove from saved' : 'Save product',
+                          onPressed: () =>
+                              context.read<WishlistCubit>().toggle(product),
+                          icon: Icon(
+                            saved
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/localization/app_localizations.dart';
+import '../../../core/settings/settings_cubit.dart';
 import '../../auth/presentation/auth_cubit.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -53,12 +55,64 @@ class ProfilePage extends StatelessWidget {
                             value: user.phone,
                           ),
                           const SizedBox(height: 22),
+                          const Divider(),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              context.l10n.text('settings'),
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                          ),
+                          SwitchListTile(
+                            contentPadding: EdgeInsets.zero,
+                            secondary: const Icon(Icons.dark_mode_outlined),
+                            title: Text(context.l10n.text('darkMode')),
+                            value:
+                                context
+                                    .watch<SettingsCubit>()
+                                    .state
+                                    .themeMode ==
+                                ThemeMode.dark,
+                            onChanged: context
+                                .read<SettingsCubit>()
+                                .setDarkMode,
+                          ),
+                          ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const Icon(Icons.language_rounded),
+                            title: Text(context.l10n.text('language')),
+                            trailing: DropdownButton<String>(
+                              value: context
+                                  .watch<SettingsCubit>()
+                                  .state
+                                  .locale
+                                  .languageCode,
+                              onChanged: (value) {
+                                if (value != null) {
+                                  context.read<SettingsCubit>().setLanguage(
+                                    value,
+                                  );
+                                }
+                              },
+                              items: [
+                                DropdownMenuItem(
+                                  value: 'en',
+                                  child: Text(context.l10n.text('english')),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'hi',
+                                  child: Text(context.l10n.text('hindi')),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
                           SizedBox(
                             width: double.infinity,
                             child: OutlinedButton.icon(
                               onPressed: context.read<AuthCubit>().logout,
                               icon: const Icon(Icons.logout_rounded),
-                              label: const Text('Sign out'),
+                              label: Text(context.l10n.text('signOut')),
                             ),
                           ),
                         ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/localization/app_localizations.dart';
 import 'auth_cubit.dart';
 
 class LoginPage extends StatefulWidget {
@@ -59,22 +60,22 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 28),
                     Text(
-                      'Welcome back',
+                      context.l10n.text('welcome'),
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineLarge,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Sign in to discover products picked for you.',
+                    Text(
+                      context.l10n.text('welcomeMessage'),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
                     TextFormField(
                       controller: _username,
                       textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        prefixIcon: Icon(Icons.person_outline),
+                      decoration: InputDecoration(
+                        labelText: context.l10n.text('username'),
+                        prefixIcon: const Icon(Icons.person_outline),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -92,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: _obscurePassword,
                       onFieldSubmitted: (_) => _submit(isLoading),
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: context.l10n.text('password'),
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           tooltip: _obscurePassword
@@ -136,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
                               dimension: 22,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text('Sign in'),
+                          : Text(context.l10n.text('signIn')),
                     ),
                     const SizedBox(height: 16),
                     const Text(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/di/service_locator.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/widgets/state_views.dart';
 import '../domain/product.dart';
 import 'product_card.dart';
@@ -63,7 +64,7 @@ class _ProductsViewState extends State<_ProductsView> {
             slivers: [
               SliverAppBar.large(
                 pinned: true,
-                title: const Text('Discover'),
+                title: Text(context.l10n.text('discover')),
                 actions: [
                   PopupMenuButton<ProductSort>(
                     tooltip: 'Sort products',
@@ -87,9 +88,9 @@ class _ProductsViewState extends State<_ProductsView> {
                   child: TextField(
                     controller: _searchController,
                     onChanged: context.read<ProductsCubit>().search,
-                    decoration: const InputDecoration(
-                      hintText: 'Search products',
-                      prefixIcon: Icon(Icons.search_rounded),
+                    decoration: InputDecoration(
+                      hintText: context.l10n.text('searchProducts'),
+                      prefixIcon: const Icon(Icons.search_rounded),
                     ),
                   ),
                 ),
@@ -104,7 +105,7 @@ class _ProductsViewState extends State<_ProductsView> {
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: ChoiceChip(
-                          label: const Text('All'),
+                          label: Text(context.l10n.text('all')),
                           selected: state.selectedCategory == null,
                           onSelected: (_) => context
                               .read<ProductsCubit>()
@@ -130,6 +131,24 @@ class _ProductsViewState extends State<_ProductsView> {
                   ),
                 ),
               ),
+              if (state.isOffline)
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.fromLTRB(20, 6, 20, 4),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.tertiaryContainer,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.cloud_off_rounded),
+                        const SizedBox(width: 10),
+                        Expanded(child: Text(context.l10n.text('offline'))),
+                      ],
+                    ),
+                  ),
+                ),
               ..._contentSlivers(state),
             ],
           ),

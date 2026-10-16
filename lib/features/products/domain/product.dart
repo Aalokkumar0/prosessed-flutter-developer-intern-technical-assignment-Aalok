@@ -56,12 +56,14 @@ class ProductPage {
     required this.total,
     required this.skip,
     required this.limit,
+    this.isFromCache = false,
   });
 
   final List<Product> products;
   final int total;
   final int skip;
   final int limit;
+  final bool isFromCache;
 }
 
 abstract interface class ProductsRepository {

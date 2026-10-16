@@ -14,8 +14,12 @@ import '../../features/products/data/products_repository_impl.dart';
 import '../../features/products/domain/product.dart';
 import '../../features/products/domain/product_use_cases.dart';
 import '../../features/products/presentation/products_cubit.dart';
+import '../../features/wishlist/data/wishlist_repository_impl.dart';
+import '../../features/wishlist/domain/wishlist_repository.dart';
+import '../../features/wishlist/presentation/wishlist_cubit.dart';
 import '../network/api_client.dart';
 import '../network/session_store.dart';
+import '../settings/settings_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -32,13 +36,18 @@ Future<void> configureDependencies() async {
     )
     ..registerLazySingleton(() => AuthUseCases(getIt()))
     ..registerLazySingleton<ProductsRepository>(
-      () => ProductsRepositoryImpl(getIt()),
+      () => ProductsRepositoryImpl(getIt(), getIt()),
     )
     ..registerLazySingleton(() => ProductUseCases(getIt()))
     ..registerLazySingleton<CartRepository>(
       () => CartRepositoryImpl(getIt(), getIt()),
     )
+    ..registerLazySingleton<WishlistRepository>(
+      () => WishlistRepositoryImpl(getIt()),
+    )
     ..registerFactory(() => AuthCubit(getIt()))
     ..registerFactory(() => ProductsCubit(getIt()))
-    ..registerFactory(() => CartCubit(getIt()));
+    ..registerFactory(() => CartCubit(getIt()))
+    ..registerFactory(() => SettingsCubit(getIt()));
+  getIt.registerFactory(() => WishlistCubit(getIt()));
 }
