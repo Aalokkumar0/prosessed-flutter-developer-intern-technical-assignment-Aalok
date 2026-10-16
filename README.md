@@ -2,7 +2,7 @@
 
 ShopSphere is a responsive Flutter shopping catalogue powered by the public DummyJSON API. It demonstrates secure authentication, resilient networking, explicit state management, persistent cart behavior, adaptive layouts, and testable feature-first architecture.
 
-> Release APK and demo-video links will be added after device QA and recording.
+> Release APK.
 
 ## Screenshots
 
