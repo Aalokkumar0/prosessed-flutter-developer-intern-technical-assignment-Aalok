@@ -30,6 +30,7 @@ class _ProductsView extends StatefulWidget {
 class _ProductsViewState extends State<_ProductsView> {
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
+  Product? _selectedProduct;
 
   @override
   void initState() {
@@ -54,7 +55,7 @@ class _ProductsViewState extends State<_ProductsView> {
   Widget build(BuildContext context) {
     return BlocBuilder<ProductsCubit, ProductsState>(
       builder: (context, state) {
-        return RefreshIndicator(
+        final catalogue = RefreshIndicator(
           onRefresh: () => context.read<ProductsCubit>().load(refresh: true),
           child: CustomScrollView(
             controller: _scrollController,
@@ -133,6 +134,41 @@ class _ProductsViewState extends State<_ProductsView> {
             ],
           ),
         );
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth < 1024) return catalogue;
+            final selected =
+                _selectedProduct != null &&
+                    state.products.any(
+                      (product) => product.id == _selectedProduct!.id,
+                    )
+                ? _selectedProduct
+                : state.products.isEmpty
+                ? null
+                : state.products.first;
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(width: 470, child: catalogue),
+                const VerticalDivider(width: 1),
+                Expanded(
+                  child: selected == null
+                      ? const EmptyStateView(
+                          title: 'Select a product',
+                          message: 'Product details will appear here.',
+                          icon: Icons.touch_app_outlined,
+                        )
+                      : ProductDetailsPane(
+                          key: ValueKey(selected.id),
+                          productId: selected.id,
+                          preview: selected,
+                          enableHero: false,
+                        ),
+                ),
+              ],
+            );
+          },
+        );
       },
     );
   }
@@ -201,6 +237,10 @@ class _ProductsViewState extends State<_ProductsView> {
   }
 
   void _openDetails(Product product) {
+    if (MediaQuery.sizeOf(context).width >= 1024) {
+      setState(() => _selectedProduct = product);
+      return;
+    }
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) =>

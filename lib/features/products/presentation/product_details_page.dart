@@ -8,6 +8,7 @@ import '../../../core/error/app_failure.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../cart/presentation/cart_cubit.dart';
 import '../domain/product.dart';
+import '../domain/product_use_cases.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   const ProductDetailsPage({required this.productId, this.preview, super.key});
@@ -20,6 +21,35 @@ class ProductDetailsPage extends StatefulWidget {
 }
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Product details')),
+      body: ProductDetailsPane(
+        productId: widget.productId,
+        preview: widget.preview,
+      ),
+    );
+  }
+}
+
+class ProductDetailsPane extends StatefulWidget {
+  const ProductDetailsPane({
+    required this.productId,
+    this.preview,
+    this.enableHero = true,
+    super.key,
+  });
+
+  final int productId;
+  final Product? preview;
+  final bool enableHero;
+
+  @override
+  State<ProductDetailsPane> createState() => _ProductDetailsPaneState();
+}
+
+class _ProductDetailsPaneState extends State<ProductDetailsPane> {
   late Future<Product> _product;
   int _quantity = 1;
 
@@ -30,37 +60,35 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   void _load() {
-    _product = getIt<ProductsRepository>().getProduct(widget.productId);
+    _product = getIt<ProductUseCases>().getProduct(widget.productId);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Product details')),
-      body: FutureBuilder<Product>(
-        future: _product,
-        initialData: widget.preview,
-        builder: (context, snapshot) {
-          if (snapshot.hasError && snapshot.data == null) {
-            final message = snapshot.error is AppFailure
-                ? (snapshot.error! as AppFailure).message
-                : 'Unable to load this product.';
-            return ErrorStateView(
-              message: message,
-              onRetry: () => setState(_load),
-            );
-          }
-          final product = snapshot.data;
-          if (product == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return _DetailsContent(
-            product: product,
-            quantity: _quantity,
-            onQuantityChanged: (value) => setState(() => _quantity = value),
+    return FutureBuilder<Product>(
+      future: _product,
+      initialData: widget.preview,
+      builder: (context, snapshot) {
+        if (snapshot.hasError && snapshot.data == null) {
+          final message = snapshot.error is AppFailure
+              ? (snapshot.error! as AppFailure).message
+              : 'Unable to load this product.';
+          return ErrorStateView(
+            message: message,
+            onRetry: () => setState(_load),
           );
-        },
-      ),
+        }
+        final product = snapshot.data;
+        if (product == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return _DetailsContent(
+          product: product,
+          quantity: _quantity,
+          enableHero: widget.enableHero,
+          onQuantityChanged: (value) => setState(() => _quantity = value),
+        );
+      },
     );
   }
 }
@@ -69,11 +97,13 @@ class _DetailsContent extends StatelessWidget {
   const _DetailsContent({
     required this.product,
     required this.quantity,
+    required this.enableHero,
     required this.onQuantityChanged,
   });
 
   final Product product;
   final int quantity;
+  final bool enableHero;
   final ValueChanged<int> onQuantityChanged;
 
   @override
@@ -81,7 +111,10 @@ class _DetailsContent extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 900;
-        final gallery = _ProductGallery(product: product);
+        final gallery = _ProductGallery(
+          product: product,
+          enableHero: enableHero,
+        );
         final information = _ProductInformation(
           product: product,
           quantity: quantity,
@@ -104,9 +137,10 @@ class _DetailsContent extends StatelessWidget {
 }
 
 class _ProductGallery extends StatefulWidget {
-  const _ProductGallery({required this.product});
+  const _ProductGallery({required this.product, required this.enableHero});
 
   final Product product;
+  final bool enableHero;
 
   @override
   State<_ProductGallery> createState() => _ProductGalleryState();
@@ -127,19 +161,23 @@ class _ProductGalleryState extends State<_ProductGallery> {
           child: PageView.builder(
             itemCount: images.length,
             onPageChanged: (index) => setState(() => _page = index),
-            itemBuilder: (_, index) => Hero(
-              tag: index == 0
-                  ? 'product-${widget.product.id}'
-                  : 'product-${widget.product.id}-$index',
-              child: CachedNetworkImage(
+            itemBuilder: (_, index) {
+              final image = CachedNetworkImage(
                 imageUrl: images[index],
                 fit: BoxFit.contain,
                 placeholder: (_, _) =>
                     const ColoredBox(color: Color(0xFFF0ECE7)),
                 errorWidget: (_, _, _) =>
                     const Icon(Icons.broken_image_outlined, size: 56),
-              ),
-            ),
+              );
+              if (!widget.enableHero) return image;
+              return Hero(
+                tag: index == 0
+                    ? 'product-${widget.product.id}'
+                    : 'product-${widget.product.id}-$index',
+                child: image,
+              );
+            },
           ),
         ),
         if (images.length > 1)
