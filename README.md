@@ -23,16 +23,18 @@ Screenshots will be added after the final phone and tablet QA pass. The submissi
 - [x] DummyJSON checkout and order-confirmation screen
 - [x] Profile data and secure logout; forced logout for expired sessions
 - [x] Compact bottom navigation, medium navigation rail and expanded master-detail layout
-- [x] 43 unit and widget tests covering models, repositories, use cases, Cubits, networking and cart calculations
+- [x] 50 unit and widget tests covering models, repositories, use cases, Cubits, networking, persistence and cart calculations
 - [x] 20+ incremental Conventional Commits
 
 ### Bonus scope
 
 - [x] Hero animation between product card and details
 - [x] GitHub Actions quality checks
+- [x] Persistent light/dark appearance toggle
+- [x] Locally persisted wishlist with a dedicated Saved screen
+- [x] Offline fallback using the last cached catalogue and category data
+- [x] English and Hindi localization for primary navigation and shopping flows
 - [ ] Automatic token refresh
-- [ ] Offline product cache
-- [ ] Wishlist, theme toggle and localization
 
 ## Tech stack
 
@@ -55,6 +57,8 @@ lib/
 │   ├── di/          # Dependency composition
 │   ├── error/       # Typed domain failures
 │   ├── network/     # Dio client and secure session store
+│   ├── localization/# English and Hindi UI strings
+│   ├── settings/    # Persistent theme and language state
 │   ├── theme/       # Material 3 visual system
 │   └── widgets/     # Shared loading, empty and error UI
 └── features/
@@ -62,6 +66,7 @@ lib/
     ├── products/    # Catalogue, filters, details and repository
     ├── cart/        # Persistence, calculations and checkout
     ├── profile/     # Current-user presentation
+    ├── wishlist/    # Persistent favourites and Saved screen
     └── shell/       # Adaptive application navigation
 ```
 
@@ -110,7 +115,7 @@ flutter analyze
 flutter test --coverage
 ```
 
-Current result: **43 passing tests**, **0 analyzer issues**, and **71.9% line coverage** across files included by the test run.
+Current result: **50 passing tests**, **0 analyzer issues**, and **73.8% line coverage** across files included by the test run.
 
 ## Test credentials
 
@@ -127,7 +132,7 @@ These public DummyJSON credentials are pre-filled on the login screen for review
 - DummyJSON simulates checkout and does not persist orders server-side.
 - Sorting is delegated to supported API query parameters rather than reordering one page locally.
 - Expanded layouts use a persistent catalogue/detail split; compact and medium layouts navigate to a dedicated details page.
-- Token refresh, offline catalogue caching and bonus personalization were deferred so the mandatory experience and tests could remain coherent.
+- Automatic token refresh remains deferred; expired sessions are securely cleared and routed back to login.
 - Before submission, device/emulator QA, screenshots, the demo recording, signed release artifact and public-link checks must still be completed.
 
 ## Author
