@@ -1,14 +1,44 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'core/di/service_locator.dart';
+import 'core/network/api_client.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/auth_cubit.dart';
 import 'features/auth/presentation/login_page.dart';
 import 'features/auth/presentation/splash_page.dart';
 import 'features/shell/presentation/app_shell.dart';
 
-class ShopSphereApp extends StatelessWidget {
+class ShopSphereApp extends StatefulWidget {
   const ShopSphereApp({super.key});
+
+  @override
+  State<ShopSphereApp> createState() => _ShopSphereAppState();
+}
+
+class _ShopSphereAppState extends State<ShopSphereApp> {
+  late final StreamSubscription<void> _sessionSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    // A single listener keeps expired-session behavior consistent on every screen.
+    _sessionSubscription = getIt<ApiClient>().sessionExpired.listen((_) {
+      if (mounted) {
+        context.read<AuthCubit>().logout(
+          message: 'Your session expired. Please sign in again.',
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _sessionSubscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

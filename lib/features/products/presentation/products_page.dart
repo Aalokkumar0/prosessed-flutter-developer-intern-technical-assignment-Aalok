@@ -54,78 +54,84 @@ class _ProductsViewState extends State<_ProductsView> {
   Widget build(BuildContext context) {
     return BlocBuilder<ProductsCubit, ProductsState>(
       builder: (context, state) {
-        return CustomScrollView(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverAppBar.large(
-              pinned: true,
-              title: const Text('Discover'),
-              actions: [
-                PopupMenuButton<ProductSort>(
-                  tooltip: 'Sort products',
-                  initialValue: state.sort,
-                  onSelected: context.read<ProductsCubit>().changeSort,
-                  itemBuilder: (_) => ProductSort.values
-                      .map(
-                        (sort) =>
-                            PopupMenuItem(value: sort, child: Text(sort.label)),
-                      )
-                      .toList(),
-                  icon: const Icon(Icons.sort_rounded),
-                ),
-              ],
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: context.read<ProductsCubit>().search,
-                  decoration: const InputDecoration(
-                    hintText: 'Search products',
-                    prefixIcon: Icon(Icons.search_rounded),
+        return RefreshIndicator(
+          onRefresh: () => context.read<ProductsCubit>().load(refresh: true),
+          child: CustomScrollView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverAppBar.large(
+                pinned: true,
+                title: const Text('Discover'),
+                actions: [
+                  PopupMenuButton<ProductSort>(
+                    tooltip: 'Sort products',
+                    initialValue: state.sort,
+                    onSelected: context.read<ProductsCubit>().changeSort,
+                    itemBuilder: (_) => ProductSort.values
+                        .map(
+                          (sort) => PopupMenuItem(
+                            value: sort,
+                            child: Text(sort.label),
+                          ),
+                        )
+                        .toList(),
+                    icon: const Icon(Icons.sort_rounded),
+                  ),
+                ],
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: context.read<ProductsCubit>().search,
+                    decoration: const InputDecoration(
+                      hintText: 'Search products',
+                      prefixIcon: Icon(Icons.search_rounded),
+                    ),
                   ),
                 ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 52,
-                child: ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: ChoiceChip(
-                        label: const Text('All'),
-                        selected: state.selectedCategory == null,
-                        onSelected: (_) =>
-                            context.read<ProductsCubit>().selectCategory(null),
-                      ),
-                    ),
-                    ...state.categories.map(
-                      (category) => Padding(
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 52,
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: ChoiceChip(
-                          label: Text(_titleCase(category)),
-                          selected: state.selectedCategory == category,
-                          onSelected: (_) {
-                            _searchController.clear();
-                            context.read<ProductsCubit>().selectCategory(
-                              category,
-                            );
-                          },
+                          label: const Text('All'),
+                          selected: state.selectedCategory == null,
+                          onSelected: (_) => context
+                              .read<ProductsCubit>()
+                              .selectCategory(null),
                         ),
                       ),
-                    ),
-                  ],
+                      ...state.categories.map(
+                        (category) => Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ChoiceChip(
+                            label: Text(_titleCase(category)),
+                            selected: state.selectedCategory == category,
+                            onSelected: (_) {
+                              _searchController.clear();
+                              context.read<ProductsCubit>().selectCategory(
+                                category,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            ..._contentSlivers(state),
-          ],
+              ..._contentSlivers(state),
+            ],
+          ),
         );
       },
     );

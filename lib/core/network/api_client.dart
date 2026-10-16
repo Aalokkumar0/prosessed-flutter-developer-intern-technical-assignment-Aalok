@@ -35,6 +35,9 @@ class ApiClient {
 
   final Dio _dio;
   final SessionStore _sessionStore;
+  final _sessionExpiredController = StreamController<void>.broadcast();
+
+  Stream<void> get sessionExpired => _sessionExpiredController.stream;
 
   Future<Map<String, dynamic>> get(
     String path, {
@@ -49,7 +52,7 @@ class ApiClient {
       );
       return response.data ?? <String, dynamic>{};
     } catch (error) {
-      throw mapNetworkError(error);
+      throw await _mapAndHandle(error);
     }
   }
 
@@ -58,7 +61,7 @@ class ApiClient {
       final response = await _dio.get<List<dynamic>>(path);
       return response.data ?? <dynamic>[];
     } catch (error) {
-      throw mapNetworkError(error);
+      throw await _mapAndHandle(error);
     }
   }
 
@@ -75,8 +78,17 @@ class ApiClient {
       );
       return response.data ?? <String, dynamic>{};
     } catch (error) {
-      throw mapNetworkError(error);
+      throw await _mapAndHandle(error);
     }
+  }
+
+  Future<AppFailure> _mapAndHandle(Object error) async {
+    final failure = mapNetworkError(error);
+    if (failure.type == FailureType.unauthorized) {
+      await _sessionStore.clear();
+      _sessionExpiredController.add(null);
+    }
+    return failure;
   }
 }
 
