@@ -134,7 +134,7 @@ These public DummyJSON credentials are pre-filled on the login screen for review
 
 **Aalok Kumar**  
 GitHub: [Aalokkumar0](https://github.com/Aalokkumar0)  
-Email: `121732315+Aalokkumar0@users.noreply.github.com` (replace with the preferred application email before submission)
+Email: `aalok0601@gmail.com`
 
 ## AI usage disclosure
 
