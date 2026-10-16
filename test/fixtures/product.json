@@ -1,0 +1,13 @@
+{
+  "id": 1,
+  "title": "Essence Mascara Lash Princess",
+  "description": "Volumising mascara",
+  "price": 9.99,
+  "discountPercentage": 10.0,
+  "rating": 4.5,
+  "stock": 5,
+  "brand": "Essence",
+  "thumbnail": "https://example.com/thumb.png",
+  "images": ["https://example.com/one.png"],
+  "reviews": [{"rating": 5, "comment": "Excellent", "reviewerName": "Emily"}]
+}
