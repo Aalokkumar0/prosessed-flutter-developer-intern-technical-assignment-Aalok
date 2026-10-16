@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shopsphere/core/error/app_failure.dart';
 import 'package:shopsphere/core/network/api_client.dart';
 import 'package:shopsphere/features/products/data/products_repository_impl.dart';
@@ -8,6 +9,7 @@ class MockApiClient extends Mock implements ApiClient {}
 
 void main() {
   late MockApiClient client;
+  late SharedPreferences preferences;
   late ProductsRepositoryImpl repository;
 
   const productJson = <String, dynamic>{
@@ -23,9 +25,11 @@ void main() {
     'reviews': <dynamic>[],
   };
 
-  setUp(() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
     client = MockApiClient();
-    repository = ProductsRepositoryImpl(client);
+    preferences = await SharedPreferences.getInstance();
+    repository = ProductsRepositoryImpl(client, preferences);
   });
 
   test('maps a successful paginated response', () async {
@@ -119,5 +123,35 @@ void main() {
         ),
       ),
     );
+  });
+
+  test('returns cached first page after a network failure', () async {
+    when(
+      () => client.get(
+        '/products',
+        authenticated: false,
+        queryParameters: any(named: 'queryParameters'),
+      ),
+    ).thenAnswer(
+      (_) async => {
+        'products': [productJson],
+        'total': 1,
+        'skip': 0,
+        'limit': 20,
+      },
+    );
+    await repository.getProducts(skip: 0, limit: 20);
+    when(
+      () => client.get(
+        '/products',
+        authenticated: false,
+        queryParameters: any(named: 'queryParameters'),
+      ),
+    ).thenThrow(const AppFailure('Offline', type: FailureType.network));
+
+    final cached = await repository.getProducts(skip: 0, limit: 20);
+
+    expect(cached.products.single.title, 'Phone');
+    expect(cached.isFromCache, isTrue);
   });
 }
