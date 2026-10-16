@@ -22,8 +22,9 @@ Screenshots will be added after the final phone and tablet QA pass. The submissi
 - [x] Locally persisted cart with live badge, totals, discounts and quantity updates
 - [x] DummyJSON checkout and order-confirmation screen
 - [x] Profile data and secure logout; forced logout for expired sessions
-- [x] Compact bottom navigation and medium/expanded navigation rail layouts
-- [x] 24 unit tests covering models, Cubits and business calculations
+- [x] Compact bottom navigation, medium navigation rail and expanded master-detail layout
+- [x] 43 unit and widget tests covering models, repositories, use cases, Cubits, networking and cart calculations
+- [x] 20+ incremental Conventional Commits
 
 ### Bonus scope
 
@@ -109,7 +110,7 @@ flutter analyze
 flutter test --coverage
 ```
 
-Current result: **24 passing tests**, **0 analyzer issues**, and **80.6% line coverage** across files included by the test run.
+Current result: **43 passing tests**, **0 analyzer issues**, and **71.9% line coverage** across files included by the test run.
 
 ## Test credentials
 
@@ -125,7 +126,7 @@ These public DummyJSON credentials are pre-filled on the login screen for review
 - The cart stores its compact JSON payload in `shared_preferences`; a larger production catalogue would use a queryable local database.
 - DummyJSON simulates checkout and does not persist orders server-side.
 - Sorting is delegated to supported API query parameters rather than reordering one page locally.
-- The expanded layout increases catalogue density and presents product media beside information on details screens. A persistent catalogue/detail split could be added with more time.
+- Expanded layouts use a persistent catalogue/detail split; compact and medium layouts navigate to a dedicated details page.
 - Token refresh, offline catalogue caching and bonus personalization were deferred so the mandatory experience and tests could remain coherent.
 - Before submission, device/emulator QA, screenshots, the demo recording, signed release artifact and public-link checks must still be completed.
 
